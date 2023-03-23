@@ -1,0 +1,25 @@
+[Unit]
+Description=grafana
+After=prometheus.service
+Requires=prometheus.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman rm %n
+ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
+  --user 0:0 \
+  --network roq-network \
+  --volume /var/lib/grafana:/var/lib/grafana \
+  --volume /usr/local/etc/grafana/provisioning:/etc/grafana/provisioning \
+  --env GF_SERVER_ROOT_URL=%%(protocol)s://%%(domain)s:%%(http_port)s/grafana/ \
+  --env GF_SERVER_HTTP_ADDR=0.0.0.0 \
+  --env GF_SERVER_HTTP_PORT={{ grafana_config.port }} \
+  --env GF_DATABASE_TYPE=sqlite3 \
+  --env GF_PATHS_PROVISIONING=/etc/grafana/provisioning \
+  --env GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource \
+  {{ docker_registry }}/{{ grafana_config.docker.name }}:{{ grafana_config.docker.tag }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 5s
+
+rule_files:
+  - 'alert.rules'
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      path_prefix: /alertmanager
+      static_configs:
+        - targets: ['alertmanager.service:{{ alertmanager_config.port }}']
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus.service:{{ prometheus_config.port }}']
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['node-exporter.service:{{ node_exporter_config.port }}']
+
+  - job_name: 'roq-cme'
+    metrics_path: '/roq/service/cme/metrics'
+    params:
+      format: [ prometheus ]
+    static_configs:
+      - targets: ['nginx.service:{{ nginx_config.http_port }}']

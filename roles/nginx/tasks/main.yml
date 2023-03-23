@@ -1,0 +1,70 @@
+---
+
+- block:
+
+  - name: create directories
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+    with_items:
+      - "/var/log/nginx"
+      - "/var/www"
+      - "/usr/local/etc/nginx"
+      - "/usr/local/etc/nginx/conf.d"
+    notify:
+    - reload nginx
+  
+  - name: available sites
+    template:
+      src: "templates/{{ item }}"
+      dest: "/usr/local/etc/nginx/conf.d/{{ item }}"
+      owner: root
+      mode: 0644
+    with_items:
+      - "nginx.conf"
+    notify:
+      - restart nginx
+  
+  - name: logrotate
+    template:
+      src: "templates/logrotate.conf"
+      dest: "/etc/logrotate.d/nginx"
+      owner: root
+      mode: 0644
+    notify:
+      - restart logrotate
+
+  - name: pull image
+    containers.podman.podman_image:
+      name: "{{ docker_registry }}/{{ nginx_config.docker.name }}"
+      tag: "{{ nginx_config.docker.tag }}"
+      force: true
+    notify:
+      - restart nginx
+  
+  - name: create systemd service
+    template:
+      src: "templates/nginx.service"
+      dest: "/etc/systemd/system/nginx.service"
+      owner: root
+      group: root
+      mode: 0644
+    register: nginx_service
+    notify:
+    - restart nginx
+
+  - name: enable the nginx service
+    systemd:
+      name: "nginx.service"
+      state: restarted
+      enabled: true
+      daemon_reload: true
+    when: nginx_service.changed
+
+  when: become_user is defined
+  become: true
+  tags:
+    - nginx

@@ -1,0 +1,22 @@
+[Unit]
+Description=prometheus
+Wants=network.target                                                                                             
+After=network-online.target
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman rm %n
+ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
+  --user 0:0 \
+  --network roq-network \
+  --volume /usr/local/etc/prometheus:/etc/prometheus:ro \
+  --volume /var/lib/prometheus:/var/lib/prometheus \
+  {{ docker_registry }}/{{ prometheus_config.docker.name }}:{{ prometheus_config.docker.tag }} \
+  --web.external-url=http://localhost/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/var/lib/prometheus
+
+[Install]
+WantedBy=multi-user.target

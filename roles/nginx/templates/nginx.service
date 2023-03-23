@@ -1,0 +1,28 @@
+[Unit]
+Description=nginx
+Wants=network.target
+After=network-online.target
+{% if 'trading' in groups %}
+After=grafana.service prometheus.service
+Requires=grafana.service prometheus.service
+{% endif %}
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+UMask=0000
+ExecReload=/usr/bin/podman kill -s HUP %n
+ExecStartPre=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman rm %n
+ExecStartPre=+/bin/mkdir -p {{ (directory_config.run + '/roq') | roq_realpath }}
+ExecStartPre=+/bin/chown {{ roq_user if roq_user is defined else ansible_user_id }}:{{ roq_user if roq_user is defined else ansible_user_id }} {{ (directory_config.run + '/roq') | roq_realpath }}
+ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n -i \
+  --network roq-network \
+  --volume /usr/local/etc/nginx/conf.d:/etc/nginx/conf.d:ro \
+  --volume /var/log/nginx:/var/log/nginx \
+  --volume /var/www:/var/www:ro \
+  --volume /run/roq:/run/roq \
+  {{ docker_registry }}/{{ nginx_defaults.docker.name }}:{{ nginx_defaults.docker.tag }}
+
+[Install]
+WantedBy=multi-user.target
