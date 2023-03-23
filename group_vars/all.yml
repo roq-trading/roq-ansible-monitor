@@ -1,5 +1,7 @@
 ---
 
+docker_registry: "docker.io"
+
 node_exporter_defaults:
   port: 9100
   docker:

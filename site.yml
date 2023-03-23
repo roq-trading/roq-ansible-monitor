@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  roles:
+    - config
+    - podman
+
+- hosts: monitoring
+  roles:
+    - prometheus
+    - grafana
+
+- hosts: trading
+  roles:
+    - nginx
