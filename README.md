@@ -14,8 +14,8 @@ Podman is used, but it's just one of many solutions one could choose to manage c
 > becoming "root". Also, in our experience, it is less intrusive to the system than
 > e.g. Docker. Finally, Podman's license terms are more open than Docker's.
 
-> If Docker is your prefered solution: Just fork this project and change.
-> Podman is nearly 100% compatible with Docker.
+> Just fork this project if Docker is your prefered solution. Podman is nearly 100%
+> compatible with Docker. It is a relatively small undertaking to modify this script.
 
 ### NGINX
 
