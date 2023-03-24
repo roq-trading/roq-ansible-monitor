@@ -22,8 +22,8 @@ Podman is used, but it's just one of many solutions one could choose to manage c
 NGINX is useful as a front-end for the services without requiring ports to be
 published to the host.
 
-NGINX also solves the problem of bridging between Roq gateways running on the
-host and Prometheus.
+NGINX also solves the problem of bridging between Prometheus (container) and the
+Roq gateways (running on the host).
 
 > We don't want the containers to run unconfined (have access to the host) and the
 > only way to bridge metrics from the gateways (running natively on the host) into
