@@ -11,7 +11,8 @@ The easiest option is run the stack (NGINX, Prometheus, Grafana) as containers.
 Podman is used, but it's just one of many solutions one could choose to manage containers.
 
 > Note! Podman is convenient because it allows users to manage containers without 
-> becoming "root".
+> becoming "root". Also, in our experience, it is less intrusive to the system than
+> e.g. Docker. Finally, Podman's license terms are more open than Docker's.
 
 ### NGINX
 
