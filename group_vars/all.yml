@@ -2,35 +2,47 @@
 
 docker_registry: "docker.io"
 
+roq_defaults:
+  container_network: "roq-network"
+  run_dir: "/run/roq"
+
 node_exporter_defaults:
+  user: "root"
+  group: "root"
   port: 9100
   docker:
     name: "prom/node-exporter"
     tag: "latest"
 
 prometheus_defaults:
+  user: "root"
+  group: "root"
   port: 9090
   docker:
     name: "prom/prometheus"
     tag: "latest"
 
 alertmanager_defaults:
+  user: "root"
+  group: "root"
   port: 9093
   docker:
     name: "prom/alertmanager"
     tag: "latest"
 
 grafana_defaults:
+  user: "root"
+  group: "root"
   port: 3000
   docker:
     name: "grafana/grafana"
     tag: "latest"
 
 nginx_defaults:
+  user: "root"
+  group: "root"
   listen: "0.0.0.0"
-  http_port: 80
+  port: 80
   docker:
     name: "library/nginx"
     tag: "latest"
-  upstream: {}
-  server_location: []

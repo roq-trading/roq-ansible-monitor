@@ -6,10 +6,13 @@ After=network-online.target
 [Service]
 TimeoutStartSec=0
 Restart=always
+UMask=0000
+User={{ alertmanager_config.user }}
+Group={{ alertmanager_config.group }}
 ExecStartPre=-/usr/bin/podman stop %n
 ExecStartPre=-/usr/bin/podman rm %n
 ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
-  --network roq-network \
+  --network {{ roq_config.container_network }} \
   --volume /usr/local/etc/alertmanager:/etc/alertmanager:ro \
   --volume /var/lib/alertmanager:/var/lib/alertmanager \
   {{ docker_registry }}/{{ alertmanager_config.docker.name }}:{{ alertmanager_config.docker.tag }} \

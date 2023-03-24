@@ -6,12 +6,11 @@
     file:
       path: "{{ item }}"
       state: directory
-      owner: root
-      group: root
+      owner: "{{ nginx_config.user }}"
+      group: "{{ nginx_config.group }}"
       mode: 0755
     with_items:
       - "/var/log/nginx"
-      - "/var/www"
       - "/usr/local/etc/nginx"
       - "/usr/local/etc/nginx/conf.d"
     notify:
@@ -21,7 +20,8 @@
     template:
       src: "templates/{{ item }}"
       dest: "/usr/local/etc/nginx/conf.d/{{ item }}"
-      owner: root
+      owner: "{{ nginx_config.user }}"
+      group: "{{ nginx_config.group }}"
       mode: 0644
     with_items:
       - "nginx.conf"
@@ -33,6 +33,7 @@
       src: "templates/logrotate.conf"
       dest: "/etc/logrotate.d/nginx"
       owner: root
+      group: root
       mode: 0644
     notify:
       - restart logrotate
@@ -64,7 +65,6 @@
       daemon_reload: true
     when: nginx_service.changed
 
-  when: become_user is defined
   become: true
   tags:
     - nginx

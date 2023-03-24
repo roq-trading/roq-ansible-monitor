@@ -2,6 +2,12 @@
 
 - block:
 
+  - name: create roq config
+    set_fact:
+      roq_config: >
+          {{ roq_defaults | combine(roq | default({}), recursive=True) }}
+      cacheable: true
+
   - name: create node_exporter config
     set_fact:
       node_exporter_config: >

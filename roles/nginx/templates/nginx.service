@@ -2,27 +2,30 @@
 Description=nginx
 Wants=network.target
 After=network-online.target
-{% if 'trading' in groups %}
-After=grafana.service prometheus.service
-Requires=grafana.service prometheus.service
+{% if 'monitoring' in groups %}
+After=prometheus.service grafana.service
+Requires=prometheus.service grafana.service
 {% endif %}
 
 [Service]
 TimeoutStartSec=0
 Restart=always
 UMask=0000
+User={{ nginx_config.user }}
+Group={{ nginx_config.group }}
 ExecReload=/usr/bin/podman kill -s HUP %n
 ExecStartPre=-/usr/bin/podman stop %n
 ExecStartPre=-/usr/bin/podman rm %n
-ExecStartPre=+/bin/mkdir -p {{ (directory_config.run + '/roq') | roq_realpath }}
-ExecStartPre=+/bin/chown {{ roq_user if roq_user is defined else ansible_user_id }}:{{ roq_user if roq_user is defined else ansible_user_id }} {{ (directory_config.run + '/roq') | roq_realpath }}
+ExecStartPre=+/bin/mkdir -p {{ roq_config.run_dir }}
+ExecStartPre=+/bin/chown root:root {{ roq_config.run_dir }}
 ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n -i \
-  --network roq-network \
+  --network {{ roq_config.container_network }} \
+  --publish {{ nginx_config.port }}:{{ nginx_config.port }} \
   --volume /usr/local/etc/nginx/conf.d:/etc/nginx/conf.d:ro \
   --volume /var/log/nginx:/var/log/nginx \
   --volume /var/www:/var/www:ro \
-  --volume /run/roq:/run/roq \
-  {{ docker_registry }}/{{ nginx_defaults.docker.name }}:{{ nginx_defaults.docker.tag }}
+  --volume {{ roq_config.run_dir }}:{{ roq_config.run_dir }} \
+  {{ docker_registry }}/{{ nginx_config.docker.name }}:{{ nginx_config.docker.tag }}
 
 [Install]
 WantedBy=multi-user.target

@@ -6,11 +6,14 @@ After=network-online.target
 [Service]
 TimeoutStartSec=0
 Restart=always
+UMask=0000
+User={{ prometheus_config.user }}
+Group={{ prometheus_config.group }}
 ExecStartPre=-/usr/bin/podman stop %n
 ExecStartPre=-/usr/bin/podman rm %n
 ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
   --user 0:0 \
-  --network roq-network \
+  --network {{ roq_config.container_network }} \
   --volume /usr/local/etc/prometheus:/etc/prometheus:ro \
   --volume /var/lib/prometheus:/var/lib/prometheus \
   {{ docker_registry }}/{{ prometheus_config.docker.name }}:{{ prometheus_config.docker.tag }} \

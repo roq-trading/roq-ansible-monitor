@@ -124,6 +124,6 @@
       daemon_reload: true
     when: alertmanager_service.changed
 
-  become: "{{ 'true' if become_user is defined else 'false' }}"
+  become: true
   tags:
     - prometheus

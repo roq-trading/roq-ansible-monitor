@@ -26,4 +26,4 @@ scrape_configs:
     params:
       format: [ prometheus ]
     static_configs:
-      - targets: ['nginx.service:{{ nginx_config.http_port }}']
+      - targets: ['nginx.service:{{ nginx_config.port }}']
