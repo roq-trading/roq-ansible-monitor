@@ -2,10 +2,8 @@
 Description=nginx
 Wants=network.target
 After=network-online.target
-{% if 'monitoring' in groups %}
 After=prometheus.service grafana.service
 Requires=prometheus.service grafana.service
-{% endif %}
 
 [Service]
 TimeoutStartSec=0

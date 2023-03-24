@@ -4,12 +4,6 @@
   roles:
     - config
     - podman
-
-- hosts: monitoring
-  roles:
     - prometheus
     - grafana
-
-- hosts: all
-  roles:
     - nginx
