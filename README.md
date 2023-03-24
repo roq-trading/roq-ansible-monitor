@@ -4,7 +4,7 @@ Ansible script to install a monitoring and alerting solution, including dashboar
 
 ## Design
 
-The easiest option is run the stack (NGINX, Prometheus, Grafana) as containers.
+The easiest option is to install and run the NGINX-Prometheus-Grafana stack as containers.
 
 ### Podman
 
@@ -13,6 +13,9 @@ Podman is used, but it's just one of many solutions one could choose to manage c
 > Podman is convenient because it allows users to manage containers without 
 > becoming "root". Also, in our experience, it is less intrusive to the system than
 > e.g. Docker. Finally, Podman's license terms are more open than Docker's.
+
+> If Docker is your prefered solution: Just fork this project and change.
+> Podman is nearly 100% compatible with Docker.
 
 ### NGINX
 
