@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
   --network {{ roq_config.container_network }} \
   --volume /usr/local/etc/prometheus:/etc/prometheus:ro \
   --volume /var/lib/prometheus:/var/lib/prometheus \
-  {{ docker_registry }}/{{ prometheus_config.docker.name }}:{{ prometheus_config.docker.tag }} \
+  {{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }} \
   --web.external-url=http://localhost/prometheus \
   --config.file=/etc/prometheus/prometheus.yml \
   --storage.tsdb.path=/var/lib/prometheus

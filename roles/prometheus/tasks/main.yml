@@ -48,9 +48,9 @@
       name: "{{ item }}"
       force: true
     with_items:
-      - "{{ docker_registry }}/{{ node_exporter_config.docker.name }}:{{ node_exporter_config.docker.tag }}"
-      - "{{ docker_registry }}/{{ prometheus_config.docker.name }}:{{ prometheus_config.docker.tag }}"
-      - "{{ docker_registry }}/{{ alertmanager_config.docker.name }}:{{ alertmanager_config.docker.tag }}"
+      - "{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}"
+      - "{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}"
+      - "{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name }}:{{ alertmanager_config.container.tag }}"
     notify:
     - restart prometheus
     - restart alertmanager

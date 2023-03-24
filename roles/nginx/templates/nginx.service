@@ -23,7 +23,7 @@ ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n -i \
   --volume /var/log/nginx:/var/log/nginx \
   --volume /var/www:/var/www:ro \
   --volume {{ roq_config.run_dir }}:{{ roq_config.run_dir }} \
-  {{ docker_registry }}/{{ nginx_config.docker.name }}:{{ nginx_config.docker.tag }}
+  {{ nginx_config.container.registry }}/{{ nginx_config.container.name }}:{{ nginx_config.container.tag }}
 
 [Install]
 WantedBy=multi-user.target

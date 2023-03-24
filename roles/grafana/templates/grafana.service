@@ -22,7 +22,7 @@ ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
   --env GF_DATABASE_TYPE=sqlite3 \
   --env GF_PATHS_PROVISIONING=/etc/grafana/provisioning \
   --env GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource \
-  {{ docker_registry }}/{{ grafana_config.docker.name }}:{{ grafana_config.docker.tag }}
+  {{ grafana_config.container.registry }}/{{ grafana_config.container.name }}:{{ grafana_config.container.tag }}
 
 [Install]
 WantedBy=multi-user.target

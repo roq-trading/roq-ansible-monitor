@@ -50,8 +50,8 @@
 
   - name: pull image
     containers.podman.podman_image:
-      name: "{{ docker_registry }}/{{ grafana_config.docker.name }}"
-      tag: "{{ grafana_config.docker.tag }}"
+      name: "{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}"
+      tag: "{{ grafana_config.container.tag }}"
       force: true
     notify:
     - restart grafana

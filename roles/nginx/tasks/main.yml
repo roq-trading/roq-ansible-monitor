@@ -40,8 +40,8 @@
 
   - name: pull image
     containers.podman.podman_image:
-      name: "{{ docker_registry }}/{{ nginx_config.docker.name }}"
-      tag: "{{ nginx_config.docker.tag }}"
+      name: "{{ nginx_config.container.registry }}/{{ nginx_config.container.name }}"
+      tag: "{{ nginx_config.container.tag }}"
       force: true
     notify:
       - restart nginx

@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
   --security-opt apparmor=unconfined \
   --network {{ roq_config.container_network }} \
   --volume /run/systemd:/run/systemd \
-  {{ docker_registry }}/{{ node_exporter_config.docker.name }}:{{ node_exporter_config.docker.tag }} \
+  {{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }} \
   --collector.systemd \
   --collector.interrupts \
   --collector.processes
