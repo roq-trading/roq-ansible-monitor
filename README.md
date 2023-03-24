@@ -10,20 +10,20 @@ The easiest option is run the stack (NGINX, Prometheus, Grafana) as containers.
 
 Podman is used, but it's just one of many solutions one could choose to manage containers.
 
-> Note! Podman is convenient because it allows users to manage containers without 
+> Podman is convenient because it allows users to manage containers without 
 > becoming "root". Also, in our experience, it is less intrusive to the system than
 > e.g. Docker. Finally, Podman's license terms are more open than Docker's.
 
 ### NGINX
 
-NGINX is useful as a front-end for the services without otherwise exposing the
-underlying ports (used by the services) to the host.
+NGINX is useful as a front-end for the services without requiring underlying ports
+ (used by the services) to be exposed to the host.
 
 NGINX also solves the problem of bridging between Roq gateways running on the
 host and Prometheus.
 
-> Note! We don't want the containers to run unconfined (have access to the host)
-> and the only way to bridge metrics from the gateways (running on the host) into
+> We don't want the containers to run unconfined (have access to the host) and the
+> only way to bridge metrics from the gateways (running natively on the host) into
 > the containers is to use unix sockets. Prometheus can't scrape from unix sockets.
 > NGINX can provide that bridge.
 
