@@ -120,7 +120,7 @@ You can now access either of the following end-points
 * `http://localhost/prometheus/`
 * `http://localhost/roq/service/<name>/metrics`
 
-> Remember to replace "localhost" and/or "<name>" as appropriate.
+> Remember to replace "localhost" and/or "name" as appropriate.
 
 ### Gateways
 
@@ -130,7 +130,7 @@ You should add this to your gateway flags
 --service_listen_address /run/roq/service/<name>.sock
 ```
 
-> Remember to replace "<name>" as appropriate.
+> Remember to replace "name" as appropriate.
 
 
 ## License
