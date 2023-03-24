@@ -27,3 +27,20 @@ Gateway flags
 ```bash
 --service_listen_address /run/roq/service/cme.sock
 ```
+
+You can by default access nginx from localhost.
+You will have to open a port, or create a tunnel, if you want to access nginx from another host.
+
+End-points
+
+```
+http://localhost/prometheus/
+```
+
+```
+http://localhost/grafana/
+```
+
+```
+http://localhost/roq/service/cme/metrics
+```
