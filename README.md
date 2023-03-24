@@ -10,11 +10,21 @@ conda install ansible
 Inventory file, e.g. `server`
 
 ```
-[SERVER]
+[example]
 server ansible_host="a.b.c.d" ansible_user="ansible" become_user="root"
 ```
 
-> You should change "a.b.c.d" to the IP address of your server.
+> You should change "a.b.c.d" to the IP address of your server,
+> and the "ansible" user can be changed to any user that has sudo access.
+
+The configuration for the server can be found in `host_vars/server.yml`
+
+> The filename is automatically matched by Ansible using the label `server` from
+> the inventory.
+
+For the example we include here a list of gateways that Prometheus should scrape.
+
+You can add more configuration overriding the defaults you find in `group_vars/all.yml`.
 
 Installing
 

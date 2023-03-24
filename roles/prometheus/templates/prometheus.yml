@@ -20,10 +20,12 @@ scrape_configs:
   - job_name: 'node_exporter'
     static_configs:
       - targets: ['node-exporter.service:{{ node_exporter_config.port }}']
+{% for item in prometheus_config.scrape_configs %}
 
-  - job_name: 'roq-cme'
-    metrics_path: '/roq/service/cme/metrics'
+  - job_name: '{{ item }}'
+    metrics_path: '/roq/service/{{ item }}/metrics'
     params:
       format: [ prometheus ]
     static_configs:
       - targets: ['nginx.service:{{ nginx_config.port }}']
+{% endfor %}

@@ -1,0 +1,5 @@
+---
+
+prometheus:
+  scrape_configs:
+  - "cme"

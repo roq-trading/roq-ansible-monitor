@@ -21,6 +21,7 @@ prometheus_defaults:
   docker:
     name: "prom/prometheus"
     tag: "latest"
+  scrape_configs: []
 
 alertmanager_defaults:
   user: "root"
