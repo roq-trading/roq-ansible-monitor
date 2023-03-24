@@ -27,8 +27,8 @@ Roq gateways (running on the host).
 
 > We don't want the containers to run unconfined (have access to the host) and the
 > only way to bridge metrics from the gateways (running natively on the host) into
-> containers is to use unix sockets. Prometheus can't scrape from unix sockets.
-> Our NGINX configuration provides that bridge.
+> containers is by using unix sockets. However, Prometheus unfortunately can't
+> scrape from unix sockets. Our NGINX configuration provides that bridge.
 
 ### Prometheus
 
@@ -42,7 +42,7 @@ Prometheus is the database solution behind Grafana.
 Grafana is a dashboard solution allowing you to build your own monitoring solution.
 
 
-## Depdendencies
+## Dedendencies
 
 * [Ansible](https://www.ansible.com/)
 * [Podman](https://podman.io/)
@@ -69,7 +69,7 @@ It is identified by an IP address ("a.b.c.d") and you can log on with a user
 
 ### Inventory File
 
-Ansible requires an inventory file (not important, but let's name it "server")
+Ansible requires an inventory file (name is not important, but let's name it "example")
 
 ```
 [example]
@@ -98,7 +98,7 @@ This file contains all the defaults.
 ## Running
 
 ```bash
-ansible-playbook -i server site.yml --ask-become-pass
+ansible-playbook -i example site.yml --ask-become-pass
 ```
 
 ## Using
@@ -178,3 +178,8 @@ Roq's gateways has support Prometheus.
 ## Grafana
 
 A dashboard solution which can easily communicate with Prometheus.
+
+
+## License
+
+The project is released under the terms of the MIT license.
