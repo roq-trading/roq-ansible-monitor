@@ -44,3 +44,49 @@ http://localhost/grafana/
 ```
 http://localhost/roq/service/cme/metrics
 ```
+
+
+## Nginx
+
+### Reason #1
+
+Prometheus is easily installed as a container.
+
+However,
+
+* We don't want Prometheus to run unconfined (having access to the host system)
+* We do want the Roq gateways to run natively on the host
+
+The easiest solution to give Prometheus access to gateway metrics is to mount
+a directory into the container which includes unix sockets addresses exposed by
+the gateways.
+
+Unfortunately, Prometheus can not be configured to scrap from unix sockets, only
+regular http IP end-points.
+
+We therefore use Nginx to bridge from unix socket to regular IP.
+
+### Reason #2
+
+We could publish ports from Prometheus and Grafana to the host system.
+
+However,
+
+* Prometheus must be able to access Nginx
+* Grafana must be able to access Prometheus
+* We don't want either to run uncofined
+
+We therefore create a container network so these services can communicat between
+themselves and we only publish a port from Nginx to the host system.
+
+
+## Prometheus
+
+This is just one solution for capture time-series of gateway metrics.
+
+Roq's gateways has support Prometheus.
+
+
+## Grafana
+
+A dashboard solution which can easily communicate with Prometheus.
