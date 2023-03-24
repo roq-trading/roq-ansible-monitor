@@ -1,56 +1,58 @@
----
 
 - block:
 
   - name: create directories (prometheus)
     file:
-      path: "{{ item }}"
+      path: '{{ item }}'
       state: directory
       owner: root
       group: root
       mode: 0755
     with_items:
-      - "/usr/local/etc/prometheus"
-      - "/var/lib/prometheus"
+    - /usr/local/etc/prometheus
+    - /var/lib/prometheus
     notify:
     - restart prometheus
 
   - name: create directories (alertmanager)
     file:
-      path: "{{ item }}"
+      path: '{{ item }}'
       state: directory
       owner: root
       group: root
       mode: 0755
     with_items:
-      - "/usr/local/etc/alertmanager"
-      - "/var/lib/alertmanager"
+    - /usr/local/etc/alertmanager
+    - /var/lib/alertmanager
     notify:
     - restart alertmanager
-  
+
   - name: create config files
     template:
-      src: "templates/{{ item | basename }}"
-      dest: "/usr/local/etc/{{ item }}"
+      src: templates/{{ item | basename }}
+      dest: /usr/local/etc/{{ item }}
       owner: root
       group: root
       mode: 0644
     with_items:
-      - "prometheus/prometheus.yml"
-      - "prometheus/alert.rules"
-      - "alertmanager/alertmanager.yml"
+    - prometheus/prometheus.yml
+    - prometheus/alert.rules
+    - alertmanager/alertmanager.yml
     notify:
     - restart prometheus
     - restart alertmanager
-  
+
   - name: pull images
     containers.podman.podman_image:
-      name: "{{ item }}"
+      name: '{{ item }}'
       force: true
     with_items:
-      - "{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}"
-      - "{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}"
-      - "{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name }}:{{ alertmanager_config.container.tag }}"
+    - '{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name
+      }}:{{ node_exporter_config.container.tag }}'
+    - '{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name
+      }}:{{ prometheus_config.container.tag }}'
+    - '{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name
+      }}:{{ alertmanager_config.container.tag }}'
     notify:
     - restart prometheus
     - restart alertmanager
@@ -58,67 +60,64 @@
   ##################
   ### PROMETHEUS ###
   ##################
-  
   - name: create prometheus systemd service
     template:
-      src: "templates/prometheus.service"
-      dest: "/etc/systemd/system/prometheus.service"
+      src: templates/prometheus.service
+      dest: /etc/systemd/system/prometheus.service
       owner: root
       group: root
       mode: 0644
     register: prometheus_service
     notify:
     - restart prometheus
-  
+
   - name: enable the prometheus service
     systemd:
-      name: "prometheus.service"
+      name: prometheus.service
       state: restarted
       enabled: true
       daemon_reload: true
     when: prometheus_service.changed
-  
+
   #####################
   ### NODE-EXPORTER ###
   #####################
-  
   - name: create node-exporter systemd service
     template:
-      src: "templates/node-exporter.service"
-      dest: "/etc/systemd/system/node-exporter.service"
+      src: templates/node-exporter.service
+      dest: /etc/systemd/system/node-exporter.service
       owner: root
       group: root
       mode: 0644
     register: node_exporter_service
     notify:
     - restart node-exporter
-  
+
   - name: enable the node-exporter service
     systemd:
-      name: "node-exporter.service"
+      name: node-exporter.service
       state: restarted
       enabled: true
       daemon_reload: true
     when: node_exporter_service.changed
-  
+
   ####################
   ### ALERTMANAGER ###
   ####################
-  
   - name: create alertmanager systemd service
     template:
-      src: "templates/alertmanager.service"
-      dest: "/etc/systemd/system/alertmanager.service"
+      src: templates/alertmanager.service
+      dest: /etc/systemd/system/alertmanager.service
       owner: root
       group: root
       mode: 0644
     register: alertmanager_service
     notify:
     - restart alertmanager
-  
+
   - name: enable the alertmanager service
     systemd:
-      name: "alertmanager.service"
+      name: alertmanager.service
       state: restarted
       enabled: true
       daemon_reload: true
@@ -126,4 +125,4 @@
 
   become: true
   tags:
-    - prometheus
+  - prometheus
