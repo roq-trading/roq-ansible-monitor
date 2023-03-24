@@ -1,59 +1,133 @@
 # roq-monitor
 
-!!! EXPERIMENTAL !!!
+Ansible script to install a monitoring and alerting solution, including dashboard.
 
+## Design
+
+The easiest option is run the stack (NGINX, Prometheus, Grafana) as containers.
+
+### Podman
+
+Podman is used, but it's just one of many solutions one could choose to manage containers.
+
+> Note! Podman is convenient because it allows users to manage containers without 
+> becoming "root".
+
+### NGINX
+
+NGINX is useful as a front-end for the services without otherwise exposing the
+underlying ports (used by the services) to the host.
+
+NGINX also solves the problem of bridging between Roq gateways running on the
+host and Prometheus.
+
+> Note! We don't want the containers to run unconfined (have access to the host)
+> and the only way to bridge metrics from the gateways (running on the host) into
+> the containers is to use unix sockets. Prometheus can't scrape from unix sockets.
+> NGINX can provide that bridge.
+
+### Prometheus
+
+Prometheus can scrape metrics from the Roq gateways and collect these into a
+time-series database.
+
+Prometheus is the database solution behind Grafana.
+
+### Grafana
+
+Grafana is a dashboard solution allowing you to build your own monitoring solution.
+
+
+## Depdendencies
+
+* [Ansible](https://www.ansible.com/)
+* [Podman](https://podman.io/)
+* [NGINX](https://www.nginx.com/)
+* [Prometheus](https://prometheus.io/)
+* [Grafana](https://grafana.com/)
+
+
+## Prerequisites
+
+### Ansible
+
+If using conda, you can install ansible like this
 
 ```bash
-conda install ansible
+conda install -y ansible
 ```
 
-Inventory file, e.g. `server`
+### Remote Host
+
+This is the server you will install to.
+It is identified by an IP address ("a.b.c.d") and you can log on with a user
+("ansible") having sudo access.
+
+### Inventory File
+
+Ansible requires an inventory file (not important, but let's name it "server")
 
 ```
 [example]
 server ansible_host="a.b.c.d" ansible_user="ansible" become_user="root"
 ```
 
-> You should change "a.b.c.d" to the IP address of your server,
-> and the "ansible" user can be changed to any user that has sudo access.
+> Note! We're using the label "server".
 
-The configuration for the server can be found in `host_vars/server.yml`
+### Host Variables
 
-> The filename is automatically matched by Ansible using the label `server` from
-> the inventory.
+If created, host specific variable will be imported from `host_vars/server.yml`.
 
-For the example we include here a list of gateways that Prometheus should scrape.
+> Note! The filename is automatically matched to the label "server" from the inventory file.
 
-You can add more configuration overriding the defaults you find in `group_vars/all.yml`.
+This is the place to configure the services.
 
-Installing
+### Group Variables
+
+Common variables can be found in `group_vars/all.yml`.
+
+This file contains all the defaults.
+
+> Note! You can override the defaults by configuring host variables.
+
+
+## Running
 
 ```bash
 ansible-playbook -i server site.yml --ask-become-pass
 ```
 
-Gateway flags
+## Using
+
+### NGINX
+
+NGINX can be reached from the remote host's localhost.
+
+Access from other hosts may require
+
+* Opening a port, if you use a firewall
+* Setting up a tunnel (SSH or VPN)
+
+You can now access either of the following end-points
+
+* `http://localhost/grafana/`
+* `http://localhost/prometheus/`
+* `http://localhost/roq/service/<name>/metrics`
+
+> Note! Remember to replace "localhost" or "<name>" as appropriate.
+
+### Gateways
+
+You should add this to your gateway flags
 
 ```bash
---service_listen_address /run/roq/service/cme.sock
+--service_listen_address /run/roq/service/<name>.sock
 ```
+
+> Note! Remember to replace "<name>".
 
 You can by default access nginx from localhost.
 You will have to open a port, or create a tunnel, if you want to access nginx from another host.
-
-End-points
-
-```
-http://localhost/prometheus/
-```
-
-```
-http://localhost/grafana/
-```
-
-```
-http://localhost/roq/service/cme/metrics
-```
 
 
 ## Nginx
