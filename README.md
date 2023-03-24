@@ -105,7 +105,9 @@ ansible-playbook -i example site.yml --ask-become-pass
 
 ### NGINX
 
-NGINX can be reached from the remote host's localhost.
+NGINX can be reached from the remote host's "localhost" address.
+
+> You have to be **ON** the remote host to use the "localhost" address.
 
 Access from other hosts may require
 
@@ -118,7 +120,7 @@ You can now access either of the following end-points
 * `http://localhost/prometheus/`
 * `http://localhost/roq/service/<name>/metrics`
 
-> Remember to replace "localhost" or "<name>" as appropriate.
+> Remember to replace "localhost" and/or "<name>" as appropriate.
 
 ### Gateways
 
@@ -128,56 +130,7 @@ You should add this to your gateway flags
 --service_listen_address /run/roq/service/<name>.sock
 ```
 
-> Remember to replace "<name>".
-
-You can by default access nginx from localhost.
-You will have to open a port, or create a tunnel, if you want to access nginx from another host.
-
-
-## Nginx
-
-### Reason #1
-
-Prometheus is easily installed as a container.
-
-However,
-
-* We don't want Prometheus to run unconfined (having access to the host system)
-* We do want the Roq gateways to run natively on the host
-
-The easiest solution to give Prometheus access to gateway metrics is to mount
-a directory into the container which includes unix sockets addresses exposed by
-the gateways.
-
-Unfortunately, Prometheus can not be configured to scrap from unix sockets, only
-regular http IP end-points.
-
-We therefore use Nginx to bridge from unix socket to regular IP.
-
-### Reason #2
-
-We could publish ports from Prometheus and Grafana to the host system.
-
-However,
-
-* Prometheus must be able to access Nginx
-* Grafana must be able to access Prometheus
-* We don't want either to run uncofined
-
-We therefore create a container network so these services can communicat between
-themselves and we only publish a port from Nginx to the host system.
-
-
-## Prometheus
-
-This is just one solution for capture time-series of gateway metrics.
-
-Roq's gateways has support Prometheus.
-
-
-## Grafana
-
-A dashboard solution which can easily communicate with Prometheus.
+> Remember to replace "<name>" as appropriate.
 
 
 ## License
