@@ -16,16 +16,16 @@ Podman is used, but it's just one of many solutions one could choose to manage c
 
 ### NGINX
 
-NGINX is useful as a front-end for the services without requiring underlying ports
- (used by the services) to be exposed to the host.
+NGINX is useful as a front-end for the services without requiring ports to be
+published to the host.
 
 NGINX also solves the problem of bridging between Roq gateways running on the
 host and Prometheus.
 
 > We don't want the containers to run unconfined (have access to the host) and the
 > only way to bridge metrics from the gateways (running natively on the host) into
-> the containers is to use unix sockets. Prometheus can't scrape from unix sockets.
-> NGINX can provide that bridge.
+> containers is to use unix sockets. Prometheus can't scrape from unix sockets.
+> Our NGINX configuration provides that bridge.
 
 ### Prometheus
 
