@@ -11,11 +11,13 @@ Inventory file, e.g. `server`
 
 ```
 [SERVER]
-server ansible_host="192.168.188.50" ansible_user="ansible" become_user="root"
+server ansible_host="a.b.c.d" ansible_user="ansible" become_user="root"
 
 [monitoring]
 server
 ```
+
+> You should change "a.b.c.d" to the IP address of your server.
 
 Installing
 
