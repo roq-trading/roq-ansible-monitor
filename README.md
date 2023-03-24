@@ -76,13 +76,13 @@ Ansible requires an inventory file (name is not important, but let's name it "ex
 server ansible_host="a.b.c.d" ansible_user="ansible" become_user="root"
 ```
 
-> Note! We're using the label "server".
+> We're using the label "server".
 
 ### Host Variables
 
 If created, host specific variable will be imported from `host_vars/server.yml`.
 
-> Note! The filename is automatically matched to the label "server" from the inventory file.
+> The filename is automatically matched to the label "server" from the inventory file.
 
 This is the place to configure the services.
 
@@ -92,7 +92,7 @@ Common variables can be found in `group_vars/all.yml`.
 
 This file contains all the defaults.
 
-> Note! You can override the defaults by configuring host variables.
+> You can override the defaults by configuring host variables.
 
 
 ## Running
@@ -118,7 +118,7 @@ You can now access either of the following end-points
 * `http://localhost/prometheus/`
 * `http://localhost/roq/service/<name>/metrics`
 
-> Note! Remember to replace "localhost" or "<name>" as appropriate.
+> Remember to replace "localhost" or "<name>" as appropriate.
 
 ### Gateways
 
@@ -128,7 +128,7 @@ You should add this to your gateway flags
 --service_listen_address /run/roq/service/<name>.sock
 ```
 
-> Note! Remember to replace "<name>".
+> Remember to replace "<name>".
 
 You can by default access nginx from localhost.
 You will have to open a port, or create a tunnel, if you want to access nginx from another host.
