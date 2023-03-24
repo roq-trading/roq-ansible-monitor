@@ -3,31 +3,22 @@
 !!! EXPERIMENTAL !!!
 
 
-using ansible
+```bash
+conda install ansible
+```
 
+Inventory file, e.g. `server`
 
-## All
+```
+[SERVER]
+server ansible_host="192.168.188.50" ansible_user="ansible" become_user="root"
 
-a (local) podman network is created
+[monitoring]
+server
+```
 
+Installing
 
-## Trading Host
-
-gateways expose metrics to:
-/run/roq/service/<name>.sock
-
-nginx will bridge these to regular IP
-
-
-## Monitoring Host
-
-prometheus will access nginx (podman network or by IP)
-
-grafana
-
-nginx will make prometheus and grafana available
-
-
-## Other
-
-trading and monitoring hosts may be the same host
+```bash
+ansible-playbook -i server site.yml --ask-become-pass
+```
