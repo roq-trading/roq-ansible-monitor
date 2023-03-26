@@ -1,79 +1,71 @@
+---
 - block:
-
-  - name: create directories
-    file:
-      path: '{{ item }}'
-      state: directory
-    with_items:
-    - /usr/local/etc/grafana
-    - /usr/local/etc/grafana/provisioning
-    - /usr/local/etc/grafana/provisioning/dashboards
-    - /usr/local/etc/grafana/provisioning/datasources
-    - /var/lib/grafana
-    - /var/lib/grafana/dashboards
-    notify:
-    - restart grafana
-
-  - name: provision datasources
-    template:
-      src: templates/datasources.yml
-      dest: /usr/local/etc/grafana/provisioning/datasources/all.yml
-      owner: root
-      group: root
-      mode: 0644
-    notify:
-    - restart grafana
-
-  - name: provision dashboards (common)
-    copy:
-      src: files/{{ item }}
-      dest: /var/lib/grafana/dashboards/{{ item }}
-      owner: root
-      group: root
-      mode: 0644
-    with_items:
-    - roq-dashboard.json
-    notify:
-    - restart grafana
-
-  - name: provision dashboards
-    template:
-      src: templates/dashboards.yml
-      dest: /usr/local/etc/grafana/provisioning/dashboards/all.yml
-      owner: root
-      group: root
-      mode: 0644
-    notify:
-    - restart grafana
-
-  - name: pull image
-    containers.podman.podman_image:
-      name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name
-        }}'
-      tag: '{{ grafana_config.container.tag }}'
-      force: true
-    notify:
-    - restart grafana
-
-  - name: create systemd service
-    template:
-      src: templates/grafana.service
-      dest: /etc/systemd/system/grafana.service
-      owner: root
-      group: root
-      mode: 0644
-    register: grafana_service
-    notify:
-    - restart grafana
-
-  - name: enable the grafana service
-    systemd:
-      name: grafana.service
-      state: restarted
-      enabled: true
-      daemon_reload: true
-    when: grafana_service.changed
-
+    - name: create directories
+      file:
+        path: '{{ item }}'
+        state: directory
+      with_items:
+        - /usr/local/etc/grafana
+        - /usr/local/etc/grafana/provisioning
+        - /usr/local/etc/grafana/provisioning/dashboards
+        - /usr/local/etc/grafana/provisioning/datasources
+        - /var/lib/grafana
+        - /var/lib/grafana/dashboards
+      notify:
+        - restart grafana
+    - name: provision datasources
+      template:
+        src: templates/datasources.yml
+        dest: /usr/local/etc/grafana/provisioning/datasources/all.yml
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart grafana
+    - name: provision dashboards (common)
+      copy:
+        src: files/{{ item }}
+        dest: /var/lib/grafana/dashboards/{{ item }}
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - roq-dashboard.json
+      notify:
+        - restart grafana
+    - name: provision dashboards
+      template:
+        src: templates/dashboards.yml
+        dest: /usr/local/etc/grafana/provisioning/dashboards/all.yml
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart grafana
+    - name: pull image
+      containers.podman.podman_image:
+        name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}'
+        tag: '{{ grafana_config.container.tag }}'
+        force: true
+      notify:
+        - restart grafana
+    - name: create systemd service
+      template:
+        src: templates/grafana.service
+        dest: /etc/systemd/system/grafana.service
+        owner: root
+        group: root
+        mode: 0644
+      register: grafana_service
+      notify:
+        - restart grafana
+    - name: enable the grafana service
+      systemd:
+        name: grafana.service
+        state: restarted
+        enabled: true
+        daemon_reload: true
+      when: grafana_service.changed
   become: true
   tags:
-  - grafana
+    - grafana

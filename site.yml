@@ -1,8 +1,8 @@
 ---
 - hosts: all
   roles:
-  - config
-  - podman
-  - prometheus
-  - grafana
-  - nginx
+    - config
+    - podman
+    - prometheus
+    - grafana
+    - nginx

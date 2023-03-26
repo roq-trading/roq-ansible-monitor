@@ -1,15 +1,14 @@
+---
 - name: restart nginx
   service:
     name: nginx
     state: restarted
   become: true
-
 - name: reload nginx
   service:
     name: nginx
     state: reloaded
   become: true
-
 - name: restart logrotate
   service:
     name: logrotate

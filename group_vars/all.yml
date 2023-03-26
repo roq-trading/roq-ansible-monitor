@@ -1,7 +1,7 @@
+---
 roq_defaults:
   container_network: roq-network
   run_dir: /run/roq
-
 node_exporter_defaults:
   user: root
   group: root
@@ -10,7 +10,6 @@ node_exporter_defaults:
     name: prom/node-exporter
     tag: latest
     registry: docker.io
-
 prometheus_defaults:
   user: root
   group: root
@@ -20,7 +19,6 @@ prometheus_defaults:
     tag: latest
     registry: docker.io
   scrape_configs: []
-
 alertmanager_defaults:
   user: root
   group: root
@@ -29,7 +27,6 @@ alertmanager_defaults:
     name: prom/alertmanager
     tag: latest
     registry: docker.io
-
 grafana_defaults:
   user: root
   group: root
@@ -38,7 +35,6 @@ grafana_defaults:
     name: grafana/grafana
     tag: latest
     registry: docker.io
-
 nginx_defaults:
   user: root
   group: root

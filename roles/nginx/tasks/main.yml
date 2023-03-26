@@ -1,69 +1,62 @@
+---
 - block:
-
-  - name: create directories
-    file:
-      path: '{{ item }}'
-      state: directory
-      owner: '{{ nginx_config.user }}'
-      group: '{{ nginx_config.group }}'
-      mode: 0755
-    with_items:
-    - /var/log/nginx
-    - /usr/local/etc/nginx
-    - /usr/local/etc/nginx/conf.d
-    notify:
-    - reload nginx
-
-  - name: available sites
-    template:
-      src: templates/{{ item }}
-      dest: /usr/local/etc/nginx/conf.d/{{ item }}
-      owner: '{{ nginx_config.user }}'
-      group: '{{ nginx_config.group }}'
-      mode: 0644
-    with_items:
-    - nginx.conf
-    notify:
-    - restart nginx
-
-  - name: logrotate
-    template:
-      src: templates/logrotate.conf
-      dest: /etc/logrotate.d/nginx
-      owner: root
-      group: root
-      mode: 0644
-    notify:
-    - restart logrotate
-
-  - name: pull image
-    containers.podman.podman_image:
-      name: '{{ nginx_config.container.registry }}/{{ nginx_config.container.name
-        }}'
-      tag: '{{ nginx_config.container.tag }}'
-      force: true
-    notify:
-    - restart nginx
-
-  - name: create systemd service
-    template:
-      src: templates/nginx.service
-      dest: /etc/systemd/system/nginx.service
-      owner: root
-      group: root
-      mode: 0644
-    register: nginx_service
-    notify:
-    - restart nginx
-
-  - name: enable the nginx service
-    systemd:
-      name: nginx.service
-      state: restarted
-      enabled: true
-      daemon_reload: true
-    when: nginx_service.changed
-
+    - name: create directories
+      file:
+        path: '{{ item }}'
+        state: directory
+        owner: '{{ nginx_config.user }}'
+        group: '{{ nginx_config.group }}'
+        mode: 0755
+      with_items:
+        - /var/log/nginx
+        - /usr/local/etc/nginx
+        - /usr/local/etc/nginx/conf.d
+      notify:
+        - reload nginx
+    - name: available sites
+      template:
+        src: templates/{{ item }}
+        dest: /usr/local/etc/nginx/conf.d/{{ item }}
+        owner: '{{ nginx_config.user }}'
+        group: '{{ nginx_config.group }}'
+        mode: 0644
+      with_items:
+        - nginx.conf
+      notify:
+        - restart nginx
+    - name: logrotate
+      template:
+        src: templates/logrotate.conf
+        dest: /etc/logrotate.d/nginx
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart logrotate
+    - name: pull image
+      containers.podman.podman_image:
+        name: '{{ nginx_config.container.registry }}/{{ nginx_config.container.name }}'
+        tag: '{{ nginx_config.container.tag }}'
+        force: true
+      notify:
+        - restart nginx
+    - name: create systemd service
+      template:
+        src: templates/nginx.service
+        dest: /etc/systemd/system/nginx.service
+        owner: root
+        group: root
+        mode: 0644
+      register: nginx_service
+      notify:
+        - restart nginx
+    - name: enable the nginx service
+      systemd:
+        name: nginx.service
+        state: restarted
+        enabled: true
+        daemon_reload: true
+      when: nginx_service.changed
   become: true
   tags:
-  - nginx
+    - nginx
