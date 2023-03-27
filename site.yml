@@ -3,6 +3,7 @@
   roles:
     - config
     - podman
+    - docker
     - prometheus
     - grafana
     - nginx

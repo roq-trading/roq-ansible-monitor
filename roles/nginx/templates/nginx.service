@@ -16,8 +16,11 @@ ExecStartPre=-/usr/bin/podman stop %n
 ExecStartPre=-/usr/bin/podman rm %n
 ExecStartPre=+/bin/mkdir -p {{ roq_config.run_dir }}
 ExecStartPre=+/bin/chown root:root {{ roq_config.run_dir }}
-ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n -i \
-  --network {{ roq_config.container_network }} \
+ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n -i \
+{% if container_config.solution == 'podman' %}
+  --cgroup-manager=cgroupfs \
+{% endif %}
+  --network {{ container_config.network }} \
   --publish {{ nginx_config.port }}:{{ nginx_config.port }} \
   --volume /usr/local/etc/nginx/conf.d:/etc/nginx/conf.d:ro \
   --volume /var/log/nginx:/var/log/nginx \

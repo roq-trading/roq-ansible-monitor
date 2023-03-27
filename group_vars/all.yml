@@ -1,7 +1,9 @@
 ---
 roq_defaults:
-  container_network: roq-network
   run_dir: /run/roq
+container_defaults:
+  solution: podman
+  network: roq-network
 node_exporter_defaults:
   user: root
   group: root

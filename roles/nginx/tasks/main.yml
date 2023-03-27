@@ -38,6 +38,15 @@
         name: '{{ nginx_config.container.registry }}/{{ nginx_config.container.name }}'
         tag: '{{ nginx_config.container.tag }}'
         force: true
+      when: container_config.solution == 'podman'
+      notify:
+        - restart nginx
+    - name: pull image
+      docker_image:
+        name: '{{ nginx_config.container.registry }}/{{ nginx_config.container.name }}'
+        tag: '{{ nginx_config.container.tag }}'
+        source: pull
+      when: container_config.solution == 'docker'
       notify:
         - restart nginx
     - name: create systemd service

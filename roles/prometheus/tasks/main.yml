@@ -46,6 +46,19 @@
         - '{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}'
         - '{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}'
         - '{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name }}:{{ alertmanager_config.container.tag }}'
+      when: container_config.solution == 'podman'
+      notify:
+        - restart prometheus
+        - restart alertmanager
+    - name: pull images
+      docker_image:
+        name: '{{ item }}'
+        source: pull
+      with_items:
+        - '{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}'
+        - '{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}'
+        - '{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name }}:{{ alertmanager_config.container.tag }}'
+      when: container_config.solution == 'docker'
       notify:
         - restart prometheus
         - restart alertmanager

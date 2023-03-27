@@ -47,6 +47,15 @@
         name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}'
         tag: '{{ grafana_config.container.tag }}'
         force: true
+      when: container_config.solution == 'podman'
+      notify:
+        - restart grafana
+    - name: pull image
+      docker_image:
+        name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}'
+        tag: '{{ grafana_config.container.tag }}'
+        source: pull
+      when: container_config.solution == 'docker'
       notify:
         - restart grafana
     - name: create systemd service

@@ -1,4 +1,6 @@
 ---
+container:
+  solution: podman
 prometheus:
   scrape_configs:
     - cme

@@ -11,9 +11,12 @@ User={{ prometheus_config.user }}
 Group={{ prometheus_config.group }}
 ExecStartPre=-/usr/bin/podman stop %n
 ExecStartPre=-/usr/bin/podman rm %n
-ExecStart=/usr/bin/podman --cgroup-manager=cgroupfs run --rm --name %n \
+ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
+{% if container_config.solution == 'podman' %}
+  --cgroup-manager=cgroupfs \
+{% endif %}
   --user 0:0 \
-  --network {{ roq_config.container_network }} \
+  --network {{ container_config.network }} \
   --volume /usr/local/etc/prometheus:/etc/prometheus:ro \
   --volume /var/lib/prometheus:/var/lib/prometheus \
   {{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }} \

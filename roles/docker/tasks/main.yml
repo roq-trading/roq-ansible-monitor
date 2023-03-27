@@ -3,15 +3,15 @@
     - name: install
       apt:
         name:
-          - podman
+          - docker.io
     - name: test if network exists
       shell: '{{ container_config.solution }} network inspect {{ container_config.network }}'
       register: network_exists
-      failed_when: network_exists.rc != 0 and network_exists.rc != 125
+      failed_when: network_exists.rc != 0 and network_exists.rc != 1
     - name: create network
       shell: '{{ container_config.solution }} network create {{ container_config.network }}'
-      when: network_exists.rc == 125
+      when: network_exists.rc == 1
   become: true
-  when: container_config.solution == 'podman'
+  when: container_config.solution == 'docker'
   tags:
-    - podman
+    - docker
