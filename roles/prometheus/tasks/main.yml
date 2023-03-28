@@ -4,20 +4,32 @@
       file:
         path: '{{ item }}'
         state: directory
-        owner: root
-        group: root
+        owner: '{{ prometheus_config.user }}'
+        group: '{{ prometheus_config.group }}'
         mode: 0755
       with_items:
         - /usr/local/etc/prometheus
         - /var/lib/prometheus
       notify:
         - restart prometheus
+    - name: create config files (prometheus)
+      template:
+        src: templates/{{ item | basename }}
+        dest: /usr/local/etc/{{ item }}
+        owner: '{{ prometheus_config.user }}'
+        group: '{{ prometheus_config.group }}'
+        mode: 0644
+      with_items:
+        - prometheus/prometheus.yml
+        - prometheus/alert.rules
+      notify:
+        - restart prometheus
     - name: create directories (alertmanager)
       file:
         path: '{{ item }}'
         state: directory
-        owner: root
-        group: root
+        owner: '{{ alertmanager_config.user }}'
+        group: '{{ alertmanager_config.group }}'
         mode: 0755
       with_items:
         - /usr/local/etc/alertmanager
@@ -28,12 +40,10 @@
       template:
         src: templates/{{ item | basename }}
         dest: /usr/local/etc/{{ item }}
-        owner: root
-        group: root
+        owner: '{{ alertmanager_config.user }}'
+        group: '{{ alertmanager_config.group }}'
         mode: 0644
       with_items:
-        - prometheus/prometheus.yml
-        - prometheus/alert.rules
         - alertmanager/alertmanager.yml
       notify:
         - restart prometheus
@@ -62,10 +72,6 @@
       notify:
         - restart prometheus
         - restart alertmanager
-
-  ##################
-  ### PROMETHEUS  ###
-  ##################
     - name: create prometheus systemd service
       template:
         src: templates/prometheus.service
@@ -83,10 +89,6 @@
         enabled: true
         daemon_reload: true
       when: prometheus_service.changed
-
-  #####################
-  ### NODE-EXPORTER  ###
-  #####################
     - name: create node-exporter systemd service
       template:
         src: templates/node-exporter.service
@@ -104,10 +106,6 @@
         enabled: true
         daemon_reload: true
       when: node_exporter_service.changed
-
-  ####################
-  ### ALERTMANAGER  ###
-  ####################
     - name: create alertmanager systemd service
       template:
         src: templates/alertmanager.service

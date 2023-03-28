@@ -4,8 +4,8 @@
       file:
         path: '{{ item }}'
         state: directory
-        owner: root
-        group: root
+        owner: '{{ grafana_config.user }}'
+        group: '{{ grafana_config.group }}'
         mode: 0755
       with_items:
         - /usr/local/etc/grafana
@@ -20,8 +20,8 @@
       template:
         src: templates/datasources.yml
         dest: /usr/local/etc/grafana/provisioning/datasources/all.yml
-        owner: root
-        group: root
+        owner: '{{ grafana_config.user }}'
+        group: '{{ grafana_config.group }}'
         mode: 0644
       notify:
         - restart grafana
@@ -29,8 +29,8 @@
       copy:
         src: files/{{ item }}
         dest: /var/lib/grafana/dashboards/{{ item }}
-        owner: root
-        group: root
+        owner: '{{ grafana_config.user }}'
+        group: '{{ grafana_config.group }}'
         mode: 0644
       with_items:
         - roq-dashboard.json
@@ -40,8 +40,8 @@
       template:
         src: templates/dashboards.yml
         dest: /usr/local/etc/grafana/provisioning/dashboards/all.yml
-        owner: root
-        group: root
+        owner: '{{ grafana_config.user }}'
+        group: '{{ grafana_config.group }}'
         mode: 0644
       notify:
         - restart grafana

@@ -1,7 +1,6 @@
 ---
 container:
-  solution: podman
+  solution: docker
 prometheus:
   scrape_configs:
     - cme
-    - deribit

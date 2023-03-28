@@ -11,12 +11,3 @@ datasources:
     type: "prometheus"
     url: "http://prometheus.service:{{ prometheus_config.port }}/prometheus"
     version: 1
-{% if 'clickhouse' in groups %}
-  - name: "ClickHouse"
-    orgId: 1
-    access: "proxy"
-    editable: true
-    isDefault: false
-    type: "clickhouse"
-    url: "http://clickhouse.service:{{ clickhouse_config.http_port }}"
-{% endif %}

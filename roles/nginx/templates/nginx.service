@@ -14,8 +14,10 @@ Group={{ nginx_config.group }}
 ExecReload=/usr/bin/{{ container_config.solution }} kill -s HUP %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
-ExecStartPre=+/bin/mkdir -p {{ roq_config.run_dir }}
-ExecStartPre=+/bin/chown root:root {{ roq_config.run_dir }}
+ExecStartPre=+/bin/mkdir -p {{ roq_config.dirs.run }}
+ExecStartPre=+/bin/chown {{ roq_config.service.user }}:{{ roq_config.service.group }} {{ roq_config.dirs.run }}
+ExecStartPre=+/bin/mkdir -p {{ roq_config.dirs.run }}/service
+ExecStartPre=+/bin/chown {{ roq_config.service.user }}:{{ roq_config.service.group }} {{ roq_config.dirs.run }}/service
 ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n -i \
 {% if container_config.solution == 'podman' %}
   --cgroup-manager=cgroupfs \
@@ -25,7 +27,7 @@ ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n -i \
   --volume /usr/local/etc/nginx/conf.d:/etc/nginx/conf.d:ro \
   --volume /var/log/nginx:/var/log/nginx \
   --volume /var/www:/var/www:ro \
-  --volume {{ roq_config.run_dir }}:{{ roq_config.run_dir }} \
+  --volume {{ roq_config.dirs.run }}:{{ roq_config.dirs.run }} \
   {{ nginx_config.container.registry }}/{{ nginx_config.container.name }}:{{ nginx_config.container.tag }}
 
 [Install]

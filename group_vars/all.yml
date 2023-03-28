@@ -1,6 +1,10 @@
 ---
 roq_defaults:
-  run_dir: /run/roq
+  dirs:
+    run: /run/roq
+  service:
+    user: ansible
+    group: ansible
 container_defaults:
   solution: podman
   network: roq-network
