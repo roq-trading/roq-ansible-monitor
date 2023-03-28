@@ -1,9 +1,9 @@
 ---
 - block:
-    - name: install
-      apt:
-        name:
-          - docker.io
+#    - name: install
+#      apt:
+#        name:
+#          - docker.io
     - name: test if network exists
       shell: '{{ container_config.solution }} network inspect {{ container_config.network }}'
       register: network_exists

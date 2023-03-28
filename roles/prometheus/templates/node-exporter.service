@@ -9,8 +9,8 @@ Restart=always
 UMask=0000
 User={{ node_exporter_config.user }}
 Group={{ node_exporter_config.group }}
-ExecStartPre=-/usr/bin/podman stop %n
-ExecStartPre=-/usr/bin/podman rm %n
+ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
+ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
 ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
 {% if container_config.solution == 'podman' %}
   --cgroup-manager=cgroupfs \
