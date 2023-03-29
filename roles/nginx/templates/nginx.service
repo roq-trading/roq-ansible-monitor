@@ -14,10 +14,9 @@ Group={{ nginx_config.group }}
 ExecReload=/usr/bin/{{ container_config.solution }} kill -s HUP %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
-ExecStartPre=+/bin/mkdir -p {{ roq_config.dirs.run }}
-ExecStartPre=+/bin/chown {{ roq_config.service.user }}:{{ roq_config.service.group }} {{ roq_config.dirs.run }}
 ExecStartPre=+/bin/mkdir -p {{ roq_config.dirs.run }}/service
-ExecStartPre=+/bin/chown {{ roq_config.service.user }}:{{ roq_config.service.group }} {{ roq_config.dirs.run }}/service
+ExecStartPre=+/bin/chown -R {{ roq_config.service.user }}:{{ roq_config.service.group }} {{ roq_config.dirs.run }}
+ExecStartPre=+/bin/chmod -R 0777 {{ roq_config.dirs.run }}
 ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n -i \
 {% if container_config.solution == 'podman' %}
   --cgroup-manager=cgroupfs \
