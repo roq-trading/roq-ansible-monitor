@@ -8,6 +8,8 @@
         group: '{{ nginx_config.group }}'
         mode: 0755
       with_items:
+        - /var/www
+        - /var/www/html
         - /var/log/nginx
         - /usr/local/etc/nginx
         - /usr/local/etc/nginx/conf.d
