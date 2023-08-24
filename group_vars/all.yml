@@ -2,7 +2,7 @@
 roq_defaults:
   dirs:
     run: /run/roq
-  service:
+  systemd:
     user: ansible
     group: ansible
 container_defaults:
