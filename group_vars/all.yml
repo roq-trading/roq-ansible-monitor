@@ -8,6 +8,14 @@ roq_defaults:
 container_defaults:
   solution: podman
   network: roq-network
+clickhouse_defaults:
+  port: 9000
+  http_port: 8123
+  metrics_port: 8001
+  container:
+    name: clickhouse/clickhouse-server
+    tag: latest
+    registry: docker.io
 node_exporter_defaults:
   user: root
   group: root

@@ -4,6 +4,7 @@
     - config
     - podman
     - docker
+    - clickhouse
     - prometheus
     - grafana
     - nginx

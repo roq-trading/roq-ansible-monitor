@@ -10,6 +10,11 @@
         container_config: >
           {{ container_defaults | combine(container | default({}), recursive=True) }}
         cacheable: true
+    - name: create clickhouse config
+      set_fact:
+        clickhouse_config: >
+          {{ clickhouse_defaults | combine(clickhouse | default({}), recursive=True) }}
+        cacheable: true
     - name: create node_exporter config
       set_fact:
         node_exporter_config: >

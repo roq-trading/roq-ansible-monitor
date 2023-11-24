@@ -1,0 +1,25 @@
+[Unit]
+Description=clickhouse server
+Wants=network.target                                                                                             
+After=network-online.target
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
+ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
+ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
+{% if container_config.solution == 'podman' %}
+  --cgroup-manager=cgroupfs \
+{% endif %}
+  --user 0:0 \
+  --network roq-network \
+  --publish {{ clickhouse_config.port }}:9000 \
+  --publish {{ clickhouse_config.http_port }}:8123 \
+  --publish {{ clickhouse_config.metrics_port }}:8001 \
+  --volume /var/lib/clickhouse:/var/lib/clickhouse \
+  --volume /usr/local/etc/clickhouse:/etc/clickhouse-server/config.d \
+  {{ clickhouse_config.container.registry }}/{{ clickhouse_config.container.name }}:{{ clickhouse_config.container.tag }}
+
+[Install]
+WantedBy=multi-user.target
