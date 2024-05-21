@@ -9,7 +9,7 @@
         mode: 0755
       with_items:
         - /var/www
-        - /var/www/html
+        - /var/www/html  # XXX symlink
         - /var/log/nginx
         - /usr/local/etc/nginx
         - /usr/local/etc/nginx/conf.d
