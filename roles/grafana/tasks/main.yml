@@ -1,19 +1,11 @@
 ---
 - block:
-    - name: create group
-      user:
-        name: "{{ grafana_config.group }}"
-        state: present
-
     - name: create user
       user:
-        name: "{{ grafana_config.user }}"
-        groups: "{{ grafana_config.group }}"
-
+        name: '{{ grafana_config.user }}'
     - name: get uid/gid
       getent:
         database: passwd
-
     - name: create directories
       file:
         path: '{{ item }}'

@@ -3,5 +3,5 @@
   service:
     name: clickhouse-server
     state: restarted
-    enabled: yes
+    enabled: true
   become: true

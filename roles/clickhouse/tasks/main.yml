@@ -1,84 +1,68 @@
 ---
-
 - block:
-
-  - name: create group
-    user:
-      name: "{{ clickhouse_config.group }}"
-      state: present
-
-  - name: create user
-    user:
-      name: "{{ clickhouse_config.user }}"
-      groups: "{{ clickhouse_config.group }}"
-
-  - name: get uid/gid
-    getent:
-      database: passwd
-
-  - name: create directories
-    file:
-      path: "{{ item }}"
-      state: directory
-      owner: "{{ clickhouse_config.user }}"
-      group: "{{ clickhouse_config.group }}"
-      mode: 0755
-    with_items:
-      - /var/lib/clickhouse
-      - /usr/local/etc/clickhouse
-    notify:
-    - restart clickhouse-server
-
-  - name: create server config
-    template:
-      src: "templates/{{ item }}"
-      dest: "/usr/local/etc/clickhouse/{{ item }}"
-      owner: "{{ clickhouse_config.user }}"
-      group: "{{ clickhouse_config.group }}"
-      mode: 0644
-    with_items:
-      - "server_config.xml"
-      - "users.xml"
-    notify:
-    - restart clickhouse-server
-
-  - name: pull image (podman)
-    containers.podman.podman_image:
-      name: "{{ clickhouse_config.container.registry }}/{{ clickhouse_config.container.name }}"
-      tag: "{{ clickhouse_config.container.tag }}"
-      force: true
-    when: container_config.solution == 'podman'
-    notify:
-    - restart clickhouse-server
-
-  - name: pull image (docker)
-    docker_image:
-      name: "{{ clickhouse_config.container.registry }}/{{ clickhouse_config.container.name }}"
-      tag: "{{ clickhouse_config.container.tag }}"
-      source: pull
-    when: container_config.solution == 'docker'
-    notify:
-    - restart clickhouse-server
-
-  - name: create systemd service
-    template:
-      src: "templates/clickhouse-server.service"
-      dest: "/etc/systemd/system/clickhouse-server.service"
-      owner: root
-      group: root
-      mode: 0644
-    register: clickhouse_service
-    notify:
-    - restart clickhouse-server
-
-  - name: enable the clickhouse service
-    systemd:
-      name: "clickhouse-server.service"
-      state: restarted
-      enabled: true
-      daemon_reload: true
-    when: clickhouse_service.changed
-
+    - name: create user
+      user:
+        name: '{{ clickhouse_config.user }}'
+    - name: get uid/gid
+      getent:
+        database: passwd
+    - name: create directories
+      file:
+        path: '{{ item }}'
+        state: directory
+        owner: '{{ clickhouse_config.user }}'
+        group: '{{ clickhouse_config.group }}'
+        mode: 0755
+      with_items:
+        - /var/lib/clickhouse
+        - /usr/local/etc/clickhouse
+      notify:
+        - restart clickhouse-server
+    - name: create server config
+      template:
+        src: templates/{{ item }}
+        dest: /usr/local/etc/clickhouse/{{ item }}
+        owner: '{{ clickhouse_config.user }}'
+        group: '{{ clickhouse_config.group }}'
+        mode: 0644
+      with_items:
+        - server_config.xml
+        - users.xml
+      notify:
+        - restart clickhouse-server
+    - name: pull image (podman)
+      containers.podman.podman_image:
+        name: '{{ clickhouse_config.container.registry }}/{{ clickhouse_config.container.name }}'
+        tag: '{{ clickhouse_config.container.tag }}'
+        force: true
+      when: container_config.solution == 'podman'
+      notify:
+        - restart clickhouse-server
+    - name: pull image (docker)
+      docker_image:
+        name: '{{ clickhouse_config.container.registry }}/{{ clickhouse_config.container.name }}'
+        tag: '{{ clickhouse_config.container.tag }}'
+        source: pull
+      when: container_config.solution == 'docker'
+      notify:
+        - restart clickhouse-server
+    - name: create systemd service
+      template:
+        src: templates/clickhouse-server.service
+        dest: /etc/systemd/system/clickhouse-server.service
+        owner: root
+        group: root
+        mode: 0644
+      register: clickhouse_service
+      notify:
+        - restart clickhouse-server
+    - name: enable the clickhouse service
+      systemd:
+        name: clickhouse-server.service
+        state: restarted
+        enabled: true
+        daemon_reload: true
+      when: clickhouse_service.changed
   become: true
   tags:
     - clickhouse

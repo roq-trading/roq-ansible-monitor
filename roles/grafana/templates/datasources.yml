@@ -1,15 +1,13 @@
 ---
 
 # !!! THIS FILE HAS BEEN AUTO-GENERATED !!!
-
 apiVersion: 1
-
 datasources:
-  - name: "Prometheus"
+  - name: Prometheus
     orgId: 1
-    access: "proxy"
+    access: proxy
     editable: true
     isDefault: true
-    type: "prometheus"
-    url: "http://prometheus.service:{{ prometheus_config.port }}/prometheus"
+    type: prometheus
+    url: http://prometheus.service:{{ prometheus_config.port }}/prometheus
     version: 1
