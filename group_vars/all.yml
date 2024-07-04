@@ -9,6 +9,8 @@ container_defaults:
   solution: podman
   network: roq-network
 clickhouse_defaults:
+  user: clickhouse
+  group: clickhouse
   port: 9000
   http_port: 8123
   metrics_port: 8001
@@ -25,8 +27,8 @@ node_exporter_defaults:
     tag: latest
     registry: docker.io
 prometheus_defaults:
-  user: root
-  group: root
+  user: prometheus
+  group: prometheus
   port: 9090
   container:
     name: prom/prometheus
@@ -34,16 +36,16 @@ prometheus_defaults:
     registry: docker.io
   scrape_configs: []
 alertmanager_defaults:
-  user: root
-  group: root
+  user: alertmanager
+  group: alertmanager
   port: 9093
   container:
     name: prom/alertmanager
     tag: latest
     registry: docker.io
 grafana_defaults:
-  user: root
-  group: root
+  user: grafana
+  group: grafana
   port: 3000
   container:
     name: grafana/grafana

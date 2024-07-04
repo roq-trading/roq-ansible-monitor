@@ -8,16 +8,14 @@ Requires=prometheus.service
 [Service]
 TimeoutStartSec=0
 Restart=always
-UMask=0000
-User={{ grafana_config.user }}
-Group={{ grafana_config.group }}
+ExecStop=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
 ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
 {% if container_config.solution == 'podman' %}
   --cgroup-manager=cgroupfs \
 {% endif %}
-  --user 0:0 \
+  --user {{ getent_passwd[grafana_config.user].1 }}:{{ getent_passwd[grafana_config.user].2 }} \
   --network {{ container_config.network }} \
   --volume /var/lib/grafana:/var/lib/grafana \
   --volume /usr/local/etc/grafana/provisioning:/etc/grafana/provisioning \

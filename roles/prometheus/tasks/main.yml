@@ -1,5 +1,29 @@
 ---
 - block:
+    - name: create group (prometheus)
+      user: 
+        name: "{{ prometheus_config.group }}"
+        state: present
+
+    - name: create user (prometheus)
+      user: 
+        name: "{{ prometheus_config.user }}"
+        groups: "{{ prometheus_config.group }}"
+
+    - name: create group (alertmanager)
+      user: 
+        name: "{{ alertmanager_config.group }}"
+        state: present
+
+    - name: create user (alertmanager)
+      user: 
+        name: "{{ alertmanager_config.user }}"
+        groups: "{{ alertmanager_config.group }}"
+
+    - name: get uid/gid
+      getent:
+        database: passwd
+
     - name: create directories (prometheus)
       file:
         path: '{{ item }}'

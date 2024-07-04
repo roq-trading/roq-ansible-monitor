@@ -8,16 +8,14 @@ After=network-online.target
 [Service]
 TimeoutStartSec=0
 Restart=always
-UMask=0000
-User={{ alertmanager_config.user }}
-Group={{ alertmanager_config.group }}
+ExecStop=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
-ExecStart=/usr/bin/{{ container_config.solution }} --cgroup-manager=cgroupfs run --rm --name %n \
+ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
 {% if container_config.solution == 'podman' %}
   --cgroup-manager=cgroupfs \
 {% endif %}
-  --user 0:0 \
+  --user {{ getent_passwd[alertmanager_config.user].1 }}:{{ getent_passwd[alertmanager_config.user].2 }} \
   --network {{ container_config.network }} \
   --volume /usr/local/etc/alertmanager:/etc/alertmanager:ro \
   --volume /var/lib/alertmanager:/var/lib/alertmanager \

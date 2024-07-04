@@ -14,6 +14,7 @@ UMask=0000
 User={{ nginx_config.user }}
 Group={{ nginx_config.group }}
 ExecReload=/usr/bin/{{ container_config.solution }} kill -s HUP %n
+ExecStop=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
 ExecStartPre=+/bin/mkdir -p {{ roq_config.dirs.run }}/service

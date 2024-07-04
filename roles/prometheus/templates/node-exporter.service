@@ -8,16 +8,14 @@ After=network-online.target
 [Service]
 TimeoutStartSec=0
 Restart=always
-UMask=0000
-User={{ node_exporter_config.user }}
-Group={{ node_exporter_config.group }}
+ExecStop=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
 ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
 ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
 {% if container_config.solution == 'podman' %}
   --cgroup-manager=cgroupfs \
 {% endif %}
-  --user 0:0 \
+  --user {{ getent_passwd[node_exporter_config.user].1 }}:{{ getent_passwd[node_exporter_config.user].2 }} \
   --security-opt apparmor=unconfined \
   --network {{ container_config.network }} \
   --volume /run/systemd:/run/systemd \

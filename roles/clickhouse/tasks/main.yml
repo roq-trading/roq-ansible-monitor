@@ -2,33 +2,39 @@
 
 - block:
 
+  - name: create group
+    user:
+      name: "{{ clickhouse_config.group }}"
+      state: present
+
+  - name: create user
+    user:
+      name: "{{ clickhouse_config.user }}"
+      groups: "{{ clickhouse_config.group }}"
+
+  - name: get uid/gid
+    getent:
+      database: passwd
+
   - name: create directories
     file:
       path: "{{ item }}"
       state: directory
-      owner: root
-      group: root
+      owner: "{{ clickhouse_config.user }}"
+      group: "{{ clickhouse_config.group }}"
       mode: 0755
     with_items:
+      - /var/lib/clickhouse
       - /usr/local/etc/clickhouse
-    notify:
-    - restart clickhouse-server
-
-  - name: create directories (ownership managed by docker image)
-    file:
-      path: "{{ item }}"
-      state: directory
-    with_items:
-      - /usr/local/var/lib/clickhouse
     notify:
     - restart clickhouse-server
 
   - name: create server config
     template:
       src: "templates/{{ item }}"
-      dest: "//usr/local/etc/clickhouse/{{ item }}"
-      owner: root
-      group: root
+      dest: "/usr/local/etc/clickhouse/{{ item }}"
+      owner: "{{ clickhouse_config.user }}"
+      group: "{{ clickhouse_config.group }}"
       mode: 0644
     with_items:
       - "server_config.xml"
@@ -73,6 +79,6 @@
       daemon_reload: true
     when: clickhouse_service.changed
 
-  become: "{{ 'true' if become_user is defined else 'false' }}"
+  become: true
   tags:
     - clickhouse
