@@ -73,6 +73,7 @@
       docker_image:
         name: '{{ item }}'
         source: pull
+        force_source: true
       with_items:
         - '{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}'
         - '{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}'

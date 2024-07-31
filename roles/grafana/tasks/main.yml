@@ -64,6 +64,7 @@
         name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}'
         tag: '{{ grafana_config.container.tag }}'
         source: pull
+        force_source: true
       when: container_config.solution == 'docker'
       notify:
         - restart grafana

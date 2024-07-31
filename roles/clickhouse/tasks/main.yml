@@ -43,6 +43,7 @@
         name: '{{ clickhouse_config.container.registry }}/{{ clickhouse_config.container.name }}'
         tag: '{{ clickhouse_config.container.tag }}'
         source: pull
+        force_source: true
       when: container_config.solution == 'docker'
       notify:
         - restart clickhouse-server

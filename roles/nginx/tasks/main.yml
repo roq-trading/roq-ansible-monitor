@@ -48,6 +48,7 @@
         name: '{{ nginx_config.container.registry }}/{{ nginx_config.container.name }}'
         tag: '{{ nginx_config.container.tag }}'
         source: pull
+        force_source: true
       when: container_config.solution == 'docker'
       notify:
         - restart nginx
