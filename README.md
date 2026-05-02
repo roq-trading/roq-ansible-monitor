@@ -4,31 +4,6 @@ Ansible script to install a monitoring and alerting solution, including dashboar
 
 ## Design
 
-The easiest option is to install and run the NGINX-Prometheus-Grafana stack as containers.
-
-### Podman
-
-Podman is used, but it's just one of many solutions one could choose to manage containers.
-
-> Podman is convenient because it allows users to manage containers without 
-> becoming "root". Also, in our experience, it is less intrusive to the system than
-> e.g. Docker. Finally, Podman's license terms are more open than Docker's.
-
-> You can change to using Docker by setting container.solution = 'docker' in your config.
-
-### NGINX
-
-NGINX is useful as a front-end for the services without requiring ports to be
-published to the host.
-
-NGINX also solves the problem of bridging between Prometheus (container) and the
-Roq gateways (running on the host).
-
-> We don't want the containers to run unconfined (have access to the host) and the
-> only way to bridge metrics from the gateways (running natively on the host) into
-> containers is by using unix sockets. However, Prometheus unfortunately can't
-> scrape from unix sockets. Our NGINX configuration provides that bridge.
-
 ### Prometheus
 
 Prometheus can scrape metrics from the Roq gateways and collect these into a
@@ -44,8 +19,6 @@ Grafana is a dashboard solution allowing you to build your own monitoring soluti
 ## Dedendencies
 
 * [Ansible](https://www.ansible.com/)
-* [Podman](https://podman.io/)
-* [NGINX](https://www.nginx.com/)
 * [Prometheus](https://prometheus.io/)
 * [Grafana](https://grafana.com/)
 
@@ -68,11 +41,16 @@ It is identified by an IP address ("a.b.c.d") and you can log on with a user
 
 ### Inventory File
 
-Ansible requires an inventory file (name is not important, but let's name it "example")
+Ansible requires an inventory file (name is not important, but let's name it "example.yml")
 
-```
-[example]
-server ansible_host="a.b.c.d" ansible_user="ansible" become_user="root"
+```yaml
+---
+ungrouped:
+  hosts:
+    server:
+      ansible_host: a.b.c.d
+      ansible_user: ansible
+      ansible_become_user: root
 ```
 
 > We're using the label "server".
@@ -99,38 +77,6 @@ This file contains all the defaults.
 ```bash
 ansible-playbook -i example site.yml --ask-become-pass
 ```
-
-## Using
-
-### NGINX
-
-NGINX can be reached from the remote host's "localhost" address.
-
-> You have to be **ON** the remote host to use the "localhost" address.
-
-Access from other hosts may require
-
-* Opening a port, if you use a firewall
-* Setting up a tunnel (SSH or VPN)
-
-You can now access either of the following end-points
-
-* `http://localhost/grafana/`
-* `http://localhost/prometheus/`
-* `http://localhost/roq/service/<name>/metrics`
-
-> Remember to replace "localhost" and/or "name" as appropriate.
-
-### Gateways
-
-You should add this to your gateway flags
-
-```bash
---service_listen_address /run/roq/service/<name>.sock
-```
-
-> Remember to replace "name" as appropriate.
-
 
 ## License
 
