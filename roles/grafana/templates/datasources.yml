@@ -1,6 +1,4 @@
 ---
-
-# !!! THIS FILE HAS BEEN AUTO-GENERATED !!!
 apiVersion: 1
 datasources:
   - name: Prometheus
@@ -9,5 +7,5 @@ datasources:
     editable: true
     isDefault: true
     type: prometheus
-    url: http://prometheus.service:{{ prometheus_config.port }}/prometheus
+    url: http://prometheus.service:{{ config_prometheus.port }}
     version: 1

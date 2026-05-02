@@ -1,19 +1,13 @@
 ---
-- name: restart prometheus
-  service:
-    name: prometheus
+- name: Restart prometheus
+  become: true
+  ansible.builtin.service:
+    name: prometheus.service
+    state: restarted
+- name: Enable prometheus
+  become: true
+  ansible.builtin.service:
+    name: prometheus.service
     state: restarted
     enabled: true
-  become: true
-- name: restart node-exporter
-  service:
-    name: node-exporter
-    state: restarted
-    enabled: true
-  become: true
-- name: restart alertmanager
-  service:
-    name: alertmanager
-    state: restarted
-    enabled: true
-  become: true
+    daemon_reload: true

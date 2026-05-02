@@ -1,28 +1,25 @@
-# !!! THIS FILE HAS BEEN AUTO-GENERATED !!!
-
 [Unit]
 Description=prometheus
-Wants=network.target                                                                                             
-After=network-online.target
+After=network.target
+Wants=network-online.target
 
 [Service]
 TimeoutStartSec=0
 Restart=always
-ExecStop=-/usr/bin/{{ container_config.solution }} stop %n
-ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
-ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
-ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
-{% if container_config.solution == 'podman' %}
-  --cgroup-manager=cgroupfs \
-{% endif %}
-  --user {{ getent_passwd[prometheus_config.user].1 }}:{{ getent_passwd[prometheus_config.user].2 }} \
-  --network {{ container_config.network }} \
+ExecStop=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman rm %n
+ExecStart=/usr/bin/podman run --rm --name %n \
+  --user 0:0 \
+  --userns=keep-id:uid={{ ansible_facts["getent_passwd"][config_prometheus.user].1 }},gid={{ ansible_facts["getent_passwd"][config_prometheus.user].2 }} \
+  --env PUID={{ ansible_facts["getent_passwd"][config_prometheus.user].1 }} \
+  --env PGID={{ ansible_facts["getent_passwd"][config_prometheus.user].2 }} \
+  --env TZ=Etc/UTC \
+  --publish 9090:9090 \
   --volume /usr/local/etc/prometheus:/etc/prometheus:ro \
-  --volume /var/lib/prometheus:/var/lib/prometheus \
-  {{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }} \
-  --web.external-url=http://localhost/prometheus \
-  --config.file=/etc/prometheus/prometheus.yml \
-  --storage.tsdb.path=/var/lib/prometheus
+  --volume /var/lib/prometheus/:/prometheus \
+  --network roq \
+  {{ config_prometheus.container.registry }}/{{ config_prometheus.container.name }}:{{ config_prometheus.container.tag }}
 
 [Install]
 WantedBy=multi-user.target

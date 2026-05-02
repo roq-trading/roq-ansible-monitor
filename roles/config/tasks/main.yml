@@ -1,47 +1,20 @@
 ---
-- block:
-    - name: create roq config
-      set_fact:
-        roq_config: >
-          {{ roq_defaults | combine(roq | default({}), recursive=True) }}
-        cacheable: true
-    - name: create container config
-      set_fact:
-        container_config: >
-          {{ container_defaults | combine(container | default({}), recursive=True) }}
-        cacheable: true
-    - name: create clickhouse config
-      set_fact:
-        clickhouse_config: >
-          {{ clickhouse_defaults | combine(clickhouse | default({}), recursive=True) }}
-        cacheable: true
-    - name: create node_exporter config
-      set_fact:
-        node_exporter_config: >
-          {{ node_exporter_defaults | combine(node_exporter | default({}), recursive=True)
-          }}
-        cacheable: true
-    - name: create prometheus config
-      set_fact:
-        prometheus_config: >
-          {{ prometheus_defaults | combine(prometheus | default({}), recursive=True)
-          }}
-        cacheable: true
-    - name: create alertmanager config
-      set_fact:
-        alertmanager_config: >
-          {{ alertmanager_defaults | combine(alertmanager | default({}), recursive=True)
-          }}
-        cacheable: true
-    - name: create grafana config
-      set_fact:
-        grafana_config: >
-          {{ grafana_defaults | combine(grafana | default({}), recursive=True) }}
-        cacheable: true
-    - name: create nginx config
-      set_fact:
-        nginx_config: >
-          {{ nginx_defaults | combine(nginx | default({}), recursive=True) }}
-        cacheable: true
+- name: Config
   tags:
     - always
+  block:
+    - name: Create grafana config
+      ansible.builtin.set_fact:
+        config_grafana: >
+          {{ grafana_defaults | combine(grafana | default({}), recursive=True) }}
+        cacheable: true
+    - name: Create prometheus config
+      ansible.builtin.set_fact:
+        config_prometheus: >
+          {{ prometheus_defaults | combine(prometheus | default({}), recursive=True) }}
+        cacheable: true
+    - name: Create pushgateway config
+      ansible.builtin.set_fact:
+        config_pushgateway: >
+          {{ pushgateway_defaults | combine(pushgateway | default({}), recursive=True) }}
+        cacheable: true

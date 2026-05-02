@@ -1,138 +1,54 @@
 ---
-- block:
-    - name: create user (prometheus)
-      user:
-        name: '{{ prometheus_config.user }}'
-    - name: create user (alertmanager)
-      user:
-        name: '{{ alertmanager_config.user }}'
-    - name: get uid/gid
-      getent:
+- name: Prometheus
+  tags:
+    - prometheus
+  block:
+    - name: Create user
+      become: true
+      ansible.builtin.user:
+        name: '{{ config_prometheus.user }}'
+    - name: Get uid/gid
+      ansible.builtin.getent:
         database: passwd
-    - name: create directories (prometheus)
-      file:
+    - name: Create directories
+      become: true
+      ansible.builtin.file:
         path: '{{ item }}'
         state: directory
-        owner: '{{ prometheus_config.user }}'
-        group: '{{ prometheus_config.group }}'
-        mode: 0755
+        owner: '{{ config_prometheus.user }}'
+        group: '{{ config_prometheus.group }}'
+        mode: '0755'
       with_items:
-        - /usr/local/etc/prometheus
         - /var/lib/prometheus
+        - /usr/local/etc/prometheus
       notify:
-        - restart prometheus
-    - name: create config files (prometheus)
-      template:
+        - Restart prometheus
+    - name: Create config files (prometheus)
+      become: true
+      ansible.builtin.template:
         src: templates/{{ item | basename }}
         dest: /usr/local/etc/{{ item }}
-        owner: '{{ prometheus_config.user }}'
-        group: '{{ prometheus_config.group }}'
-        mode: 0644
+        owner: '{{ config_prometheus.user }}'
+        group: '{{ config_prometheus.group }}'
+        mode: '0644'
       with_items:
         - prometheus/prometheus.yml
-        - prometheus/alert.rules
       notify:
-        - restart prometheus
-    - name: create directories (alertmanager)
-      file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ alertmanager_config.user }}'
-        group: '{{ alertmanager_config.group }}'
-        mode: 0755
-      with_items:
-        - /usr/local/etc/alertmanager
-        - /var/lib/alertmanager
-      notify:
-        - restart alertmanager
-    - name: create config files
-      template:
-        src: templates/{{ item | basename }}
-        dest: /usr/local/etc/{{ item }}
-        owner: '{{ alertmanager_config.user }}'
-        group: '{{ alertmanager_config.group }}'
-        mode: 0644
-      with_items:
-        - alertmanager/alertmanager.yml
-      notify:
-        - restart prometheus
-        - restart alertmanager
-    - name: pull images
+        - Restart prometheus
+    - name: Pull image
       containers.podman.podman_image:
-        name: '{{ item }}'
+        name: '{{ config_prometheus.container.registry }}/{{ config_prometheus.container.name }}'
+        tag: '{{ config_prometheus.container.tag }}'
         force: true
-      with_items:
-        - '{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}'
-        - '{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}'
-        - '{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name }}:{{ alertmanager_config.container.tag }}'
-      when: container_config.solution == 'podman'
       notify:
-        - restart prometheus
-        - restart alertmanager
-    - name: pull images
-      docker_image:
-        name: '{{ item }}'
-        source: pull
-        force_source: true
-      with_items:
-        - '{{ node_exporter_config.container.registry }}/{{ node_exporter_config.container.name }}:{{ node_exporter_config.container.tag }}'
-        - '{{ prometheus_config.container.registry }}/{{ prometheus_config.container.name }}:{{ prometheus_config.container.tag }}'
-        - '{{ alertmanager_config.container.registry }}/{{ alertmanager_config.container.name }}:{{ alertmanager_config.container.tag }}'
-      when: container_config.solution == 'docker'
-      notify:
-        - restart prometheus
-        - restart alertmanager
-    - name: create prometheus systemd service
-      template:
+        - Restart prometheus
+    - name: Create systemd service
+      become: true
+      ansible.builtin.template:
         src: templates/prometheus.service
         dest: /etc/systemd/system/prometheus.service
         owner: root
         group: root
-        mode: 0644
-      register: prometheus_service
+        mode: '0644'
       notify:
-        - restart prometheus
-    - name: enable the prometheus service
-      systemd:
-        name: prometheus.service
-        state: restarted
-        enabled: true
-        daemon_reload: true
-      when: prometheus_service.changed
-    - name: create node-exporter systemd service
-      template:
-        src: templates/node-exporter.service
-        dest: /etc/systemd/system/node-exporter.service
-        owner: root
-        group: root
-        mode: 0644
-      register: node_exporter_service
-      notify:
-        - restart node-exporter
-    - name: enable the node-exporter service
-      systemd:
-        name: node-exporter.service
-        state: restarted
-        enabled: true
-        daemon_reload: true
-      when: node_exporter_service.changed
-    - name: create alertmanager systemd service
-      template:
-        src: templates/alertmanager.service
-        dest: /etc/systemd/system/alertmanager.service
-        owner: root
-        group: root
-        mode: 0644
-      register: alertmanager_service
-      notify:
-        - restart alertmanager
-    - name: enable the alertmanager service
-      systemd:
-        name: alertmanager.service
-        state: restarted
-        enabled: true
-        daemon_reload: true
-      when: alertmanager_service.changed
-  become: true
-  tags:
-    - prometheus
+        - Enable prometheus

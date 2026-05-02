@@ -1,18 +1,23 @@
 ---
-- block:
-    - name: create user
-      user:
-        name: '{{ grafana_config.user }}'
-    - name: get uid/gid
-      getent:
+- name: Grafana
+  tags:
+    - grafana
+  block:
+    - name: Create user
+      become: true
+      ansible.builtin.user:
+        name: '{{ config_grafana.user }}'
+    - name: Get uid/gid
+      ansible.builtin.getent:
         database: passwd
-    - name: create directories
-      file:
+    - name: Create directories
+      become: true
+      ansible.builtin.file:
         path: '{{ item }}'
         state: directory
-        owner: '{{ grafana_config.user }}'
-        group: '{{ grafana_config.group }}'
-        mode: 0755
+        owner: '{{ config_grafana.user }}'
+        group: '{{ config_grafana.group }}'
+        mode: '0755'
       with_items:
         - /usr/local/etc/grafana
         - /usr/local/etc/grafana/provisioning
@@ -21,70 +26,53 @@
         - /var/lib/grafana
         - /var/lib/grafana/dashboards
       notify:
-        - restart grafana
-    - name: provision datasources
-      template:
+        - Restart grafana
+    - name: Provision datasources
+      become: true
+      ansible.builtin.template:
         src: templates/datasources.yml
         dest: /usr/local/etc/grafana/provisioning/datasources/all.yml
-        owner: '{{ grafana_config.user }}'
-        group: '{{ grafana_config.group }}'
-        mode: 0644
+        owner: '{{ config_grafana.user }}'
+        group: '{{ config_grafana.group }}'
+        mode: '0644'
       notify:
-        - restart grafana
-    - name: provision dashboards (common)
-      copy:
+        - Restart grafana
+    - name: Provision dashboards (common)
+      become: true
+      ansible.builtin.copy:
         src: files/{{ item }}
         dest: /var/lib/grafana/dashboards/{{ item }}
-        owner: '{{ grafana_config.user }}'
-        group: '{{ grafana_config.group }}'
-        mode: 0644
+        owner: '{{ config_grafana.user }}'
+        group: '{{ config_grafana.group }}'
+        mode: '0644'
       with_items:
         - roq-dashboard.json
       notify:
-        - restart grafana
-    - name: provision dashboards
-      template:
+        - Restart grafana
+    - name: Provision dashboards
+      become: true
+      ansible.builtin.template:
         src: templates/dashboards.yml
         dest: /usr/local/etc/grafana/provisioning/dashboards/all.yml
-        owner: '{{ grafana_config.user }}'
-        group: '{{ grafana_config.group }}'
-        mode: 0644
+        owner: '{{ config_grafana.user }}'
+        group: '{{ config_grafana.group }}'
+        mode: '0644'
       notify:
-        - restart grafana
-    - name: pull image
+        - Restart grafana
+    - name: Pull image
       containers.podman.podman_image:
-        name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}'
-        tag: '{{ grafana_config.container.tag }}'
+        name: '{{ config_grafana.container.registry }}/{{ config_grafana.container.name }}'
+        tag: '{{ config_grafana.container.tag }}'
         force: true
-      when: container_config.solution == 'podman'
       notify:
-        - restart grafana
-    - name: pull image
-      docker_image:
-        name: '{{ grafana_config.container.registry }}/{{ grafana_config.container.name }}'
-        tag: '{{ grafana_config.container.tag }}'
-        source: pull
-        force_source: true
-      when: container_config.solution == 'docker'
-      notify:
-        - restart grafana
-    - name: create systemd service
-      template:
+        - Restart grafana
+    - name: Create systemd service
+      become: true
+      ansible.builtin.template:
         src: templates/grafana.service
         dest: /etc/systemd/system/grafana.service
         owner: root
         group: root
-        mode: 0644
-      register: grafana_service
+        mode: '0644'
       notify:
-        - restart grafana
-    - name: enable the grafana service
-      systemd:
-        name: grafana.service
-        state: restarted
-        enabled: true
-        daemon_reload: true
-      when: grafana_service.changed
-  become: true
-  tags:
-    - grafana
+        - Enable grafana

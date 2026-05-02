@@ -1,31 +1,29 @@
-# !!! THIS FILE HAS BEEN AUTO-GENERATED !!!
-
 [Unit]
 Description=grafana
-After=prometheus.service
-Requires=prometheus.service
+After=network.target
+Wants=network-online.target
 
 [Service]
 TimeoutStartSec=0
 Restart=always
-ExecStop=-/usr/bin/{{ container_config.solution }} stop %n
-ExecStartPre=-/usr/bin/{{ container_config.solution }} stop %n
-ExecStartPre=-/usr/bin/{{ container_config.solution }} rm %n
-ExecStart=/usr/bin/{{ container_config.solution }} run --rm --name %n \
-{% if container_config.solution == 'podman' %}
-  --cgroup-manager=cgroupfs \
-{% endif %}
-  --user {{ getent_passwd[grafana_config.user].1 }}:{{ getent_passwd[grafana_config.user].2 }} \
-  --network {{ container_config.network }} \
+ExecStop=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman rm %n
+ExecStart=/usr/bin/podman run --rm --name %n \
+  --user 0:0 \
+  --userns=keep-id:uid={{ ansible_facts["getent_passwd"][config_grafana.user].1 }},gid={{ ansible_facts["getent_passwd"][config_grafana.user].2 }} \
+  --env PUID={{ ansible_facts["getent_passwd"][config_grafana.user].1 }} \
+  --env PGID={{ ansible_facts["getent_passwd"][config_grafana.user].2 }} \
+  --env TZ=Etc/UTC \
+  --publish {{ config_grafana.port }}:{{ config_grafana.port }} \
+  --network roq \
   --volume /var/lib/grafana:/var/lib/grafana \
   --volume /usr/local/etc/grafana/provisioning:/etc/grafana/provisioning \
-  --env GF_SERVER_ROOT_URL=%%(protocol)s://%%(domain)s:%%(http_port)s/grafana/ \
   --env GF_SERVER_HTTP_ADDR=0.0.0.0 \
-  --env GF_SERVER_HTTP_PORT={{ grafana_config.port }} \
+  --env GF_SERVER_HTTP_PORT={{ config_grafana.port }} \
   --env GF_DATABASE_TYPE=sqlite3 \
   --env GF_PATHS_PROVISIONING=/etc/grafana/provisioning \
-  --env GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource \
-  {{ grafana_config.container.registry }}/{{ grafana_config.container.name }}:{{ grafana_config.container.tag }}
+  {{ config_grafana.container.registry }}/{{ config_grafana.container.name }}:{{ config_grafana.container.tag }}
 
 [Install]
 WantedBy=multi-user.target
