@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run --rm --name %n \
   --publish 9090:9090 \
   --volume /usr/local/etc/prometheus:/etc/prometheus:ro \
   --volume /var/lib/prometheus/:/prometheus \
-  --network roq \
+  --network roq-network \
   {{ config_prometheus.container.registry }}/{{ config_prometheus.container.name }}:{{ config_prometheus.container.tag }}
 
 [Install]

@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman run --rm --name %n \
   --env PGID={{ ansible_facts["getent_passwd"][config_grafana.user].2 }} \
   --env TZ=Etc/UTC \
   --publish {{ config_grafana.port }}:{{ config_grafana.port }} \
-  --network roq \
+  --network roq-network \
   --volume /var/lib/grafana:/var/lib/grafana \
   --volume /usr/local/etc/grafana/provisioning:/etc/grafana/provisioning \
   --env GF_SERVER_HTTP_ADDR=0.0.0.0 \
